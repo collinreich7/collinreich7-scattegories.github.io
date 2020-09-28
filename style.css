@@ -1,20 +1,106 @@
-.myForm{
-  max-width: 15%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  /*border: solid black 1px;*/
+.lobby {
+  height: 100vh;
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 25% 25%;
+  grid-template-rows: auto 30% 30% 30%;
+  grid-template-areas:
+    "header     header      header"
+    "categories letter      controls"
+    "categories timer       controls"
+    "categories leaderboard controls";
+  border: solid black 1px;
 }
 
-.text{
+header {
+  grid-area: header;
+  border: solid black 1px;
+}
+
+.categories {
+  grid-area: categories;
+  border: solid black 1px;
+}
+
+.categoriesAnswers{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.categoriesCol1{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
   padding: 5px;
 }
 
-.btn{
-  max-width: 50%;
+.categoriesCol2{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 5px;
 }
 
-input{
-  margin-bottom: 8px;
+
+.categoriesInput{
+  margin: 5px 0px 5px 0px;
+}
+
+.category{
+  color: white;
+  font-size: 1em;
+}
+
+.letter {
+  grid-area: letter;
+  border: solid black 1px;
+  position: relative;
+}
+
+.letterWrapper{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.theLetter{
+  text-align: center;
+  font-size: 8em;
+}
+
+.timer {
+  grid-area: timer;
+  border: solid black 1px;
+  position: relative;
+}
+
+.timerWrapper{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.theTimer{
+  text-align: center;
+  font-size: 5.5em;
+}
+
+.leaderboard {
+  grid-area: leaderboard;
+  border: solid black 1px;
+}
+
+.controls {
+  grid-area: controls;
+  border: solid black 1px;
+}
+
+.controlWrapper{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
