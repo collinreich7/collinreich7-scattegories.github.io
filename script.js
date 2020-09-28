@@ -1,135 +1,102 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyCLONgiReZCAJjU4lXaoNRxph8g6EtoO5Q",
-    authDomain: "cpeg470-auth-practice.firebaseapp.com",
-    databaseURL: "https://cpeg470-auth-practice.firebaseio.com",
-    projectId: "cpeg470-auth-practice",
-    storageBucket: "cpeg470-auth-practice.appspot.com",
-    messagingSenderId: "221574779187",
-    appId: "1:221574779187:web:61eba811e6387ebedbae46"
-};
+    apiKey: "AIzaSyCJo6UuFTI9M-813L0BHIN-0kDbTfzPdR0",
+    authDomain: "cpeg470-scattegories-a4955.firebaseapp.com",
+    databaseURL: "https://cpeg470-scattegories-a4955.firebaseio.com",
+    projectId: "cpeg470-scattegories-a4955",
+    storageBucket: "cpeg470-scattegories-a4955.appspot.com",
+    messagingSenderId: "372518034210",
+    appId: "1:372518034210:web:fceb7dbe02673231cb637b"
+  };
 
 firebase.initializeApp(firebaseConfig);
+const myDatabase = firebase.database();
 
+//Initialize the gameRunnin ref to be false
+myDatabase.ref("gameRunning").set(false);
 
-firebase.auth().onAuthStateChanged(user => {
-  //alert('function called');
-  if (!!user){
-    //console.log(JSON.stringify(user));
-    $('#googleWrapper').html('');
-    $('#emailWrapper').html('');
-    $('#emailWrapper').append(`<h1>Success! Thank you, ${user.email}</h1>`);
-    //$('#wrapper').append(`<button class="signOut"> ${'Sign Out'} </button>`);
-    /* Broken right now
-    $('.signOut').addEventListener("click", function(event){
-      console.log("CATCH");
-      firebase.auth().signOut();
-    });
-    */
-  }
-    //alert(`${user.displayName || user.email}`);
-  else{
-    alert('no user signed in.');
-  }
-});
+const categoriesRef = myDatabase.ref('categories');
 
-let provider = new firebase.auth.GoogleAuthProvider();
-
-let googleBtn = document.getElementById("googleBtn");
-
-googleBtn.addEventListener("click", function(event){
-  firebase.auth().signInWithRedirect(provider);
-});
-
-firebase.auth().getRedirectResult().then(function(result) {
-  if (result.credential) {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    let token = result.credential.accessToken;
-    // ...
-  }
-  // The signed-in user info.
-  let user = result.user;
-}).catch(function(error) {
-  // Handle Errors here.
-  var errorCode = error.code;
-  var errorMessage = error.message;
-  // The email of the user's account used.
-  let email = error.email;
-  // The firebase.auth.AuthCredential type that was used.
-  let credential = error.credential;
-  // ...
-});
-
-/*
-firebase.auth()
-  .signInWithEmailAndPassword(
-    "junk@novocin.com", 
-    "fartfart"
-   ).catch(function(error) {
-          alert(error.message);
-   }
-);
-*/
-
-
-let sign = document.getElementById("submitBtn");
-let reg = document.getElementById("regBtn");
-
-let regUser = function(email, password){
-  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error){
-    let errorCode = error.code;
-    let errorMessage = error.message;
-    switch(errorCode){
-      case 'auth/email-already-in-use':
-        alert('Email is already associated with another account.');
-        break;
-      case 'auth/invalid-email':
-        alert('Entered an invalid email address.');
-        break;
-      case 'auth/operation-not-allowed':
-        alert("Error code: " + errorCode + " Error message: " + errorMessage);
-        break;
-      case 'auth/weak-password':
-        alert('Password is too weak.');
-        break;
-      default:
-        alert("Error code: " + errorCode + " Error message: " + errorMessage);
-    }
-    console.log(error);
-  });
+//Initialize the input fields to be disabled
+var categoriesInputs = document.querySelectorAll(".categoriesInput");
+for(let i = 0; i < categoriesInputs.length; i++){
+  categoriesInputs[i].disabled = true;
 };
 
-let signUser = function(email, password){
-  firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error){
-    let errorCode = error.code;
-    let errorMessage = error.message;
-    switch(errorCode){
-      case 'auth/invalid-email':
-        alert('Invalid email address.');
-        break;
-      case 'auth/user-disabled':
-        alert('Account has been disabled.');
-        break;
-      case 'auth/user-not-found':
-        alert('No account found associated with this email.');
-        break;
-      case 'auth/wrong-password':
-        alert("Incorrect email or password.");
-        break;
-      default:
-        alert("Error code: " + errorCode + " Error message: " + errorMessage);
-    }
-    console.log(error);
-  });
+//Helper function just to disable / enable the input fields for categories
+function changeCategoriesInputs(){
+  for(let i = 0; i < categoriesInputs.length; i++){
+    categoriesInputs[i].disabled = !categoriesInputs[i].disabled;
+  };
+};
+
+//Helper function that clears input fields for categories
+function clearCategoriesInputs(){
+  for(let i = 0; i < categoriesInputs.length; i++){
+    categoriesInputs[i].value = '';
+  }
 }
 
-sign.addEventListener("click", function(event){
-  let email = document.getElementById("emailText").value;
-  let password = document.getElementById("passwordText").value;
-  signUser(email,password);
-});
+//Generates a new random list of 10 categories
+function genNewList(){
+  categoriesRef.once('value', function(dataSnapshot){
+    let allCategories = dataSnapshot.val();
+    let randomCategoriesSet = document.querySelector('.categoriesList');
+    randomCategoriesSet.innerHTML = "";
+    let randomIdx;
+    let categoryElement;
+    for(let i = 0; i < 10; i++){
+      randomIdx = Math.round(Math.random()* 143);
+      categoryElement = "<li class='category'>" + allCategories[randomIdx] + "</li>";
+      randomCategoriesSet.innerHTML += categoryElement;
+    }
+  })
+};
 
-reg.addEventListener("click", function(event){
-  let email = document.getElementById("emailText").value;
-  let password = document.getElementById("passwordText").value;
-  regUser(email,password);
+//Generates a random new letter
+function genNewLetter(){
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let idx = Math.round(Math.random() * (alphabet.length - 1));
+  let letter = alphabet[idx];
+  document.querySelector(".theLetter").textContent = letter;
+};
+
+//Starts the timer, and handles what happens when the timer stops
+function startTimer(){
+  //var timeLeft = document.querySelector('.theTimer').innerHTML;
+  var timeLeft = 120;
+    let timerFunction = setInterval(function(){
+      if(timeLeft <= 0){
+        myDatabase.ref("gameRunning").set(false);
+        changeCategoriesInputs();
+        clearInterval(timerFunction);
+      }
+      document.querySelector('.theTimer').textContent = timeLeft;
+      timeLeft = timeLeft - 1;
+   }, 1000);
+}
+
+/*
+document.getElementById('genNewListBtn').addEventListener("click", genNewList);
+document.getElementById("genNewLetterBtn").addEventListener("click", genNewLetter);
+document.getElementById("timerBtn").addEventListener("click", startTimer);
+*/
+
+//Helper funciton - will disable the start button when the game is running
+myDatabase.ref("gameRunning").on("value", function(dataSnapshot){
+  let isRunning = dataSnapshot.val();
+  if(isRunning === true){
+    document.getElementById("startBtn").disabled = true;
+  }
+  if(isRunning === false){
+    document.getElementById("startBtn").disabled = false;
+  }
+})
+
+document.getElementById("startBtn").addEventListener("click", function(event){
+  myDatabase.ref("gameRunning").set(true);
+  changeCategoriesInputs();
+  clearCategoriesInputs();
+  genNewList();
+  genNewLetter();
+  startTimer();
 });
